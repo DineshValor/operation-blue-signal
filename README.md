@@ -8,6 +8,7 @@ The following values are intentionally **not stored in this Git repository**:
 
 - Q1 expected answer (`OBS_Q1`)
 - Q2 expected answer (`OBS_Q2`)
+- Q3 expected answer (`OBS_Q3`)
 - Final passcode (`OBS_PASSCODE`)
 - Session-signing key (`OBS_SESSION_KEY`)
 
@@ -20,7 +21,7 @@ Optional display configuration can be added as ordinary Cloudflare Worker variab
 
 Do not commit secret values, `.dev.vars`, `.env`, or credential files.
 
-The Worker validates Q1 and Q2 server-side and uses short-lived signed session tokens before allowing the final passcode request.
+The Worker validates Q1, Q2, and Q3 server-side and uses short-lived signed session tokens between every security layer before allowing the final passcode request.
 
 ## Structure
 
