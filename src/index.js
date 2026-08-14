@@ -4,6 +4,7 @@
  * Secrets required in Cloudflare:
  *   OBS_Q1           -> Q1 expected answer
  *   OBS_Q2           -> Q2 expected answer
+ *   OBS_Q3           -> Q3 expected answer
  *   OBS_PASSCODE     -> final passcode
  *   OBS_SESSION_KEY  -> long random signing key
  *
@@ -145,11 +146,11 @@ export default {
       const answer = typeof body?.answer === "string" ? body.answer.trim() : "";
       const token = typeof body?.token === "string" ? body.token : "";
 
-      if (![1, 2, 3].includes(stage)) {
+      if (![1, 2, 3, 4].includes(stage)) {
         return json({ success: false }, 400);
       }
 
-      if (!env.OBS_SESSION_KEY || !env.OBS_Q1 || !env.OBS_Q2 || !env.OBS_PASSCODE) {
+      if (!env.OBS_SESSION_KEY || !env.OBS_Q1 || !env.OBS_Q2 || !env.OBS_Q3 || !env.OBS_PASSCODE) {
         return json({ success: false }, 500);
       }
 
@@ -183,7 +184,24 @@ export default {
         });
       }
 
-      if (!(await verifyToken(env.OBS_SESSION_KEY, token, 2))) {
+      if (stage === 3) {
+        if (!(await verifyToken(env.OBS_SESSION_KEY, token, 2))) {
+          return json({ success: false });
+        }
+
+        if (answer.toLowerCase() !== String(env.OBS_Q3).trim().toLowerCase()) {
+          return json({ success: false });
+        }
+
+        return json({
+          success: true,
+          token: await issueToken(env.OBS_SESSION_KEY, 3),
+          agentAlias: env.OBS_AGENT_ALIAS || "AGENT",
+          realName: env.OBS_REAL_NAME || "",
+        });
+      }
+
+      if (!(await verifyToken(env.OBS_SESSION_KEY, token, 3))) {
         return json({ success: false });
       }
 
