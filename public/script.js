@@ -1612,7 +1612,7 @@ function waitForImageLoaded(
 
                         if (success) {
                             setTimeout(
-                                revealMissionImage,
+                                showQuestionThree,
                                 700
                             );
                         } else {
@@ -1730,6 +1730,181 @@ function waitForImageLoaded(
                     }
                 }
             );
+
+            autoScroll();
+        }
+
+
+        /* =========================================
+           QUESTION 03
+           ========================================= */
+
+        function showQuestionThree() {
+
+            var section =
+                document.createElement(
+                    "section"
+                );
+
+            section.className =
+                "verification fade-in";
+
+            section.innerHTML =
+                '<div class="security-title"></div>' +
+                '<div class="question"></div>' +
+                '<label class="input-label" for="answer-input-3">' +
+                    'ENTER RESPONSE' +
+                '</label>' +
+                '<input ' +
+                    'id="answer-input-3" ' +
+                    'class="answer-input" ' +
+                    'type="text" ' +
+                    'autocomplete="off" ' +
+                    'autocapitalize="none" ' +
+                    'spellcheck="false">' +
+                '<button ' +
+                    'id="verify-button-3" ' +
+                    'class="verify-button" ' +
+                    'type="button">' +
+                    'VERIFY' +
+                '</button>' +
+                '<div class="feedback" id="feedback-3" aria-live="polite"></div>';
+
+            verificationContainer.appendChild(section);
+
+            var securityTitle = section.querySelector(".security-title");
+            var questionText = section.querySelector(".question");
+            var inputLabel = section.querySelector(".input-label");
+            var input = section.querySelector("#answer-input-3");
+            var button = section.querySelector("#verify-button-3");
+            var feedback = section.querySelector("#feedback-3");
+
+            securityTitle.style.visibility = "hidden";
+            questionText.style.visibility = "hidden";
+            inputLabel.style.visibility = "hidden";
+            input.style.visibility = "hidden";
+            button.style.visibility = "hidden";
+            feedback.style.visibility = "hidden";
+
+            function typeQuestionThree() {
+                securityTitle.style.visibility = "visible";
+                typeElementText(
+                    securityTitle,
+                    "",
+                    25,
+                    function () {
+                        questionText.style.visibility = "visible";
+                        typeElementText(
+                            questionText,
+                            "Where did your last RES mission take place with Agents — D1neshVal0r?",
+                            22,
+                            function () {
+                                inputLabel.style.visibility = "visible";
+                                typeElementText(
+                                    inputLabel,
+                                    "ENTER RESPONSE",
+                                    25,
+                                    function () {
+                                        input.style.visibility = "visible";
+                                        button.style.visibility = "visible";
+                                        feedback.style.visibility = "visible";
+                                        autoScroll();
+                                        setTimeout(function () { input.focus(); }, 250);
+                                    }
+                                );
+                            }
+                        );
+                    }
+                );
+            }
+
+            typeQuestionThree();
+
+            function showResponse(lines, success) {
+                feedback.innerHTML = "";
+                feedback.className = success ? "feedback success" : "feedback error";
+
+                function next(index) {
+                    if (index >= lines.length) {
+                        if (success) {
+                            setTimeout(revealMissionImage, 700);
+                        } else {
+                            input.disabled = false;
+                            button.disabled = false;
+                            input.value = "";
+                            setTimeout(function () { input.focus(); }, 150);
+                        }
+                        return;
+                    }
+
+                    var line = document.createElement("div");
+                    line.className = "terminal-line typing-cursor";
+                    feedback.appendChild(line);
+
+                    typeElementText(
+                        line,
+                        lines[index],
+                        28,
+                        function () {
+                            setTimeout(function () { next(index + 1); }, 280);
+                        }
+                    );
+                    autoScroll();
+                }
+
+                next(0);
+            }
+
+            function verifyQuestionThree() {
+                var submitted = input.value.trim();
+
+                button.disabled = true;
+                input.disabled = true;
+
+                if (!obsSessionToken) {
+                    showResponse([
+                        "> SESSION NOT FOUND.",
+                        "> AUTHORIZATION RESTART REQUIRED."
+                    ], false);
+                    return;
+                }
+
+                obsApiVerify(3, submitted).then(function (result) {
+                    if (result.success) {
+                        showResponse([
+                            "> VERIFYING RESPONSE...",
+                            "> RESPONSE ACCEPTED.",
+                            "> MISSION VERIFICATION: CONFIRMED.",
+                            "> SECURITY LAYER 03: CLEARED."
+                        ], true);
+                    } else if (result.networkError) {
+                        showResponse([
+                            "> SECURE LINK UNAVAILABLE.",
+                            "> VERIFICATION SERVER NOT REACHABLE.",
+                            "> PLEASE TRY AGAIN."
+                        ], false);
+                    } else if (result.expired) {
+                        showResponse([
+                            "> PASSCODE EXPIRED.",
+                            "> AUTHORIZATION WINDOW CLOSED.",
+                            "> MISSION TERMINATED."
+                        ], false);
+                    } else {
+                        showResponse([
+                            "> VERIFYING RESPONSE...",
+                            "> RESPONSE REJECTED.",
+                            "> MISSION VERIFICATION: FAILED.",
+                            "> ACCESS TO NEXT SECURITY LAYER: DENIED.",
+                            "> PLEASE TRY AGAIN."
+                        ], false);
+                    }
+                });
+            }
+
+            button.addEventListener("click", verifyQuestionThree);
+            input.addEventListener("keydown", function (event) {
+                if (event.key === "Enter") verifyQuestionThree();
+            });
 
             autoScroll();
         }
@@ -2000,7 +2175,7 @@ function waitForImageLoaded(
 
                 typeElementText(status, '> AUTHORIZATION REQUESTED...', 28, function () {
                     typeElementText(status, '> SECURE SERVER VALIDATION IN PROGRESS...', 22, function () {
-                        obsApiVerify(3, '').then(function (result) {
+                        obsApiVerify(4, '').then(function (result) {
 
                             if (result.success && result.passcode) {
                                 typeElementText(
