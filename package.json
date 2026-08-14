@@ -1,0 +1,12 @@
+{
+  "name": "operation-blue-signal",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Operation Blue Signal — secure Cloudflare Worker with static assets.",
+  "scripts": {
+    "deploy": "npx wrangler deploy"
+  },
+  "devDependencies": {
+    "wrangler": "^4.68.0"
+  }
+}
