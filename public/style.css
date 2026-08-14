@@ -1,0 +1,1592 @@
+:root {
+    --bg: #000305;
+    --panel: #020608;
+    --text: #b9c0c6;
+    --muted: #7c858d;
+    --blue: #008cff;
+    --blue-bright: #16a8ff;
+    --blue-soft: rgba(0, 140, 255, 0.38);
+    --blue-faint: rgba(0, 140, 255, 0.12);
+    --line: rgba(0, 140, 255, 0.62);
+    --line-soft: rgba(0, 140, 255, 0.28);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--bg);
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100dvh;
+    padding: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 15px;
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    background: repeating-linear-gradient(
+        to bottom,
+        rgba(255,255,255,0.012) 0,
+        rgba(255,255,255,0.012) 1px,
+        transparent 1px,
+        transparent 4px
+    );
+    opacity: 0.35;
+}
+
+.terminal {
+    width: 100%;
+    max-width: 1500px;
+    min-height: 100dvh;
+    margin: 0 auto;
+    background: var(--panel);
+    border-left: 1px solid var(--line-soft);
+    border-right: 1px solid var(--line-soft);
+    box-shadow:
+        0 0 35px rgba(0, 110, 255, 0.06),
+        inset 0 0 45px rgba(0, 110, 255, 0.018);
+}
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.terminal-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    min-height: 82px;
+    padding: 10px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    background: rgba(0, 4, 7, 0.97);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 3px 18px rgba(0, 115, 255, 0.08);
+    backdrop-filter: blur(6px);
+}
+
+.header-left {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.resistance-logo-wrap {
+    width: 56px;
+    height: 62px;
+    flex: 0 0 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transform: scale(0.72);
+}
+
+.resistance-logo-wrap.logo-active {
+    opacity: 1;
+    transform: scale(1);
+    animation: resistanceLogoPulse 1.4s ease-in-out;
+}
+
+.resistance-logo {
+    display: block;
+    width: 52px;
+    height: 60px;
+    object-fit: contain;
+    filter:
+        drop-shadow(0 0 4px rgba(0, 145, 255, 0.7))
+        drop-shadow(0 0 13px rgba(0, 120, 255, 0.34));
+}
+
+@keyframes resistanceLogoPulse {
+    0% {
+        opacity: 0;
+        transform: scale(0.72);
+        filter: drop-shadow(0 0 0 rgba(0,140,255,0));
+    }
+    45% {
+        opacity: 1;
+        transform: scale(1.06);
+        filter:
+            drop-shadow(0 0 8px rgba(0,170,255,0.95))
+            drop-shadow(0 0 25px rgba(0,130,255,0.62));
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+        filter:
+            drop-shadow(0 0 4px rgba(0,145,255,0.7))
+            drop-shadow(0 0 13px rgba(0,120,255,0.34));
+    }
+}
+
+.header-title {
+    min-width: 0;
+    color: var(--blue-bright);
+    font-size: clamp(17px, 2.15vw, 27px);
+    font-weight: 700;
+    letter-spacing: 1.2px;
+    line-height: 1.1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-shadow:
+        0 0 5px rgba(0, 155, 255, 0.8),
+        0 0 16px rgba(0, 120, 255, 0.34);
+}
+
+.header-title.typing-cursor::after,
+.typing-cursor::after {
+    content: "█";
+    margin-left: 3px;
+    animation: cursorBlink 0.8s steps(1) infinite;
+}
+
+.header-status {
+    flex: 0 0 auto;
+    min-width: 185px;
+    text-align: right;
+    color: #9aa1a8;
+    font-size: 12px;
+    line-height: 1.45;
+    letter-spacing: 0.5px;
+}
+
+.terminal-version,
+.terminal-link {
+    white-space: nowrap;
+}
+
+.terminal-link {
+    color: #aeb5bc;
+}
+
+.status-square,
+.footer-square {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    margin-left: 6px;
+    background: var(--blue-bright);
+    box-shadow:
+        0 0 5px rgba(0, 165, 255, 0.9),
+        0 0 12px rgba(0, 130, 255, 0.45);
+    vertical-align: middle;
+    animation: statusPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 0.75; }
+    50% { opacity: 1; }
+}
+
+/* =========================================================
+   CONTENT
+   ========================================================= */
+
+.terminal-content {
+    padding: 18px 20px 28px;
+}
+
+#terminal-output {
+    font-size: 15px;
+    line-height: 1.35;
+    word-break: break-word;
+}
+
+.line {
+    min-height: 1.35em;
+}
+
+.secure-progress {
+    white-space: pre;
+    font-family: "Courier New", Courier, monospace;
+    color: var(--blue-bright);
+}
+
+/* =========================================================
+   TERMINAL TEXT COLORS
+   ========================================================= */
+
+.terminal-line-highlight {
+    color: var(--blue-bright) !important;
+    text-shadow:
+        0 0 5px rgba(0, 160, 255, 0.62),
+        0 0 13px rgba(0, 120, 255, 0.25);
+}
+
+.terminal-line-highlight.major-highlight {
+    font-size: 1.16em;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    animation: birthdayGlow 2.2s ease-in-out infinite;
+}
+
+@keyframes birthdayGlow {
+    0%, 100% {
+        text-shadow:
+            0 0 5px rgba(0, 160, 255, 0.65),
+            0 0 13px rgba(0, 120, 255, 0.30);
+    }
+    50% {
+        text-shadow:
+            0 0 7px rgba(0, 175, 255, 1),
+            0 0 19px rgba(0, 130, 255, 0.70),
+            0 0 32px rgba(0, 110, 255, 0.32);
+    }
+}
+
+.success {
+    color: #aeb8c0;
+}
+
+.error {
+    color: #9ca5ad;
+}
+
+/* =========================================================
+   QUESTION / VERIFICATION PANELS
+   ========================================================= */
+
+.verification,
+.agent-reveal,
+.mission-reveal,
+.final-intel {
+    margin-top: 28px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 95px;
+    animation: fadeIn 0.6s ease both;
+}
+
+.security-title {
+    margin-bottom: 14px;
+    color: var(--blue-bright);
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-shadow: 0 0 7px rgba(0, 150, 255, 0.35);
+}
+
+.question {
+    width: min(68%, 760px);
+    margin: 4px auto 20px;
+    padding: 12px 26px;
+    border: 1px solid var(--line);
+    background: rgba(0, 90, 180, 0.025);
+    color: var(--blue-bright);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.35;
+    text-shadow: 0 0 6px rgba(0, 150, 255, 0.3);
+}
+
+.question-hint {
+    width: min(68%, 760px);
+    margin: -12px auto 20px;
+    color: #808a92;
+    font-size: 13px;
+}
+
+.input-label {
+    display: block;
+    margin: 0 0 3px;
+    color: #b1b8be;
+    font-size: 14px;
+    letter-spacing: 0.4px;
+}
+
+.answer-input {
+    width: min(78%, 850px);
+    padding: 4px 8px 7px 25px;
+    background: transparent;
+    color: var(--blue-bright);
+    border: 0;
+    border-bottom: 1px solid var(--line-soft);
+    outline: none;
+    border-radius: 0;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 16px;
+    caret-color: var(--blue-bright);
+    box-shadow: inset 0 -1px 0 rgba(0,140,255,0.04);
+}
+
+.answer-input::before {
+    content: "> ";
+}
+
+.answer-input:focus {
+    border-bottom-color: var(--blue);
+    box-shadow: 0 4px 14px rgba(0, 120, 255, 0.07);
+}
+
+.verify-button {
+    margin-top: 11px;
+    padding: 7px 16px;
+    background: transparent;
+    color: var(--blue-bright);
+    border: 1px solid var(--line);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+
+.verify-button::before {
+    content: "> ";
+}
+
+.verify-button:hover {
+    background: var(--blue-faint);
+    box-shadow: 0 0 13px rgba(0, 140, 255, 0.13);
+}
+
+.verify-button:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+.feedback {
+    margin-top: 18px;
+    font-size: 14px;
+    line-height: 1.45;
+}
+
+.terminal-line {
+    display: block;
+}
+
+/* =========================================================
+   AGENT PROFILE
+   ========================================================= */
+
+.agent-name {
+    margin: 5px 0 14px;
+    color: var(--blue-bright);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 1.7px;
+    text-shadow: 0 0 7px rgba(0,150,255,0.32);
+}
+
+.agent-profile {
+    width: min(100%, 520px);
+    margin: 14px auto 18px;
+    padding: 12px;
+    visibility: hidden;
+    opacity: 0;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    background: rgba(0, 55, 115, 0.035);
+    box-shadow:
+        0 0 16px rgba(0, 130, 255, 0.10),
+        inset 0 0 20px rgba(0, 120, 255, 0.025);
+}
+
+.agent-profile img {
+    display: block;
+    width: min(100%, 430px);
+    max-height: 520px;
+    margin: 0 auto;
+    object-fit: contain;
+    border: 1px solid var(--line-soft);
+    box-shadow: 0 0 18px rgba(0, 120, 255, 0.08);
+}
+
+.profile-placeholder {
+    display: none;
+    padding: 22px;
+    border: 1px dashed var(--line-soft);
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.agent-status {
+    margin-top: 14px;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+/* =========================================================
+   MISSION IMAGE
+   ========================================================= */
+
+.image-status,
+.mission-status {
+    margin-top: 12px;
+    margin-bottom: 12px;
+    color: #a2aab1;
+    font-size: 13px;
+}
+
+.mission-image-wrap {
+    width: min(100%, 760px);
+    margin: 15px auto;
+    padding: 5px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #020507;
+    box-shadow:
+        0 0 18px rgba(0, 120, 255, 0.12),
+        inset 0 0 15px rgba(0, 120, 255, 0.035);
+    transition: opacity 0.7s ease;
+}
+
+.mission-image-wrap img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line-soft);
+}
+
+/* =========================================================
+   FINAL INTEL / DECRYPTION
+   ========================================================= */
+
+.final-title {
+    color: var(--blue-bright) !important;
+}
+
+.final-lines {
+    line-height: 1.45;
+}
+
+.final-decryption {
+    margin-top: 20px;
+    padding: 17px 0;
+    border-top: 1px solid var(--line-soft);
+    border-bottom: 1px solid var(--line-soft);
+}
+
+.decrypt-progress,
+.decrypt-status {
+    color: #aeb6bd;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.decrypt-progress-line {
+    display: block;
+    margin-top: 3px;
+    color: var(--blue-bright);
+    white-space: pre;
+    font-size: 13px;
+    line-height: 1.55;
+    text-shadow: 0 0 6px rgba(0,150,255,0.28);
+}
+
+.decrypt-button {
+    display: block;
+    visibility: hidden;
+    margin-top: 16px;
+    padding: 11px 18px;
+    background: transparent;
+    color: var(--blue-bright);
+    border: 1px solid var(--line);
+    font-family: "Courier New", Courier, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    animation: decryptPulse 1.8s ease-in-out infinite;
+}
+
+.decrypt-button::before {
+    content: "> ";
+}
+
+.decrypt-button:hover {
+    background: var(--blue-faint);
+    box-shadow: 0 0 15px rgba(0, 140, 255, 0.18);
+}
+
+.decrypt-button:disabled {
+    opacity: 0.45;
+    animation: none;
+}
+
+@keyframes decryptPulse {
+    0%, 100% { box-shadow: 0 0 4px rgba(0,140,255,0.05); }
+    50% { box-shadow: 0 0 18px rgba(0,140,255,0.20); }
+}
+
+.passcode-box {
+    display: block;
+    visibility: hidden;
+    width: 100%;
+    margin-top: 18px;
+    padding: 18px 12px;
+    background: #020609;
+    color: var(--blue-bright);
+    border: 1px solid var(--line);
+    font-family: "Courier New", Courier, monospace;
+    font-size: clamp(18px, 4vw, 29px);
+    font-weight: 700;
+    letter-spacing: 2px;
+    cursor: pointer;
+    text-align: center;
+    text-shadow: 0 0 9px rgba(0,160,255,0.48);
+}
+
+.passcode-box:hover {
+    box-shadow: 0 0 22px rgba(0,140,255,0.18);
+}
+
+.passcode-box.scrambling {
+    animation: passcodeGlitch 0.12s steps(2, end) infinite;
+}
+
+.passcode-box.decrypted {
+    border-color: var(--blue-bright);
+    box-shadow:
+        0 0 14px rgba(0,140,255,0.25),
+        0 0 32px rgba(0,120,255,0.09);
+}
+
+@keyframes passcodeGlitch {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(1px); }
+    50% { transform: translateX(-1px); }
+    75% { transform: translateX(1px); }
+    100% { transform: translateX(0); }
+}
+
+.final-ending {
+    margin-top: 24px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    line-height: 1.55;
+}
+
+/* =========================================================
+   FOOTER STATUS BAR
+   ========================================================= */
+
+.terminal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    padding: 11px 20px;
+    border-top: 1px solid var(--line);
+    color: var(--blue-bright);
+    font-size: 12px;
+    letter-spacing: 0.6px;
+    text-shadow: 0 0 5px rgba(0,150,255,0.28);
+}
+
+.footer-square {
+    width: 9px;
+    height: 9px;
+    margin: 0 7px 0 0;
+}
+
+/* =========================================================
+   ANIMATION
+   ========================================================= */
+
+.fade-in {
+    animation: fadeIn 0.6s ease both;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(7px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cursorBlink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+    body {
+        font-size: 13px;
+    }
+
+    .terminal-header {
+        min-height: 76px;
+        padding: 8px 12px;
+        gap: 8px;
+    }
+
+    .header-left {
+        gap: 8px;
+    }
+
+    .resistance-logo-wrap {
+        width: 43px;
+        height: 52px;
+        flex-basis: 43px;
+    }
+
+    .resistance-logo {
+        width: 41px;
+        height: 50px;
+    }
+
+    .header-title {
+        font-size: 14px;
+        letter-spacing: 0.6px;
+    }
+
+    .header-status {
+        min-width: 0;
+        font-size: 8px;
+        line-height: 1.35;
+    }
+
+    .status-square {
+        width: 7px;
+        height: 7px;
+        margin-left: 3px;
+    }
+
+    .terminal-content {
+        padding: 14px 12px 20px;
+    }
+
+    #terminal-output {
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    .question,
+    .question-hint {
+        width: 100%;
+    }
+
+    .question {
+        padding: 11px 14px;
+        font-size: 13px;
+    }
+
+    .answer-input {
+        width: 100%;
+        font-size: 13px;
+    }
+
+    .agent-profile {
+        width: min(100%, 460px);
+    }
+
+    .mission-image-wrap {
+        width: 100%;
+    }
+
+    .terminal-footer {
+        padding: 10px 12px;
+        font-size: 9px;
+    }
+
+    .terminal-line-highlight.major-highlight {
+        font-size: 1.05em;
+    }
+
+    .passcode-box {
+        font-size: 17px;
+        letter-spacing: 1.2px;
+    }
+}
+
+@media (max-width: 470px) {
+
+    .header-status {
+        display: none;
+    }
+
+    .header-title {
+        font-size: 13px;
+    }
+}
+
+
+/* =========================================================
+   SECURE PACKAGE SELF-DESTRUCT
+   ========================================================= */
+
+.self-destruct-sequence {
+    margin-top: 26px;
+    padding: 28px 0;
+    border-top: 1px solid rgba(0, 136, 255, 0.35);
+    border-bottom: 1px solid rgba(0, 136, 255, 0.35);
+    text-align: center;
+}
+
+.self-destruct-label {
+    color: #0088ff;
+    font-size: 12px;
+    letter-spacing: 2px;
+}
+
+.self-destruct-countdown {
+    margin-top: 22px;
+    min-height: 2em;
+    color: #00aaff;
+    font-size: clamp(18px, 4vw, 28px);
+    letter-spacing: 2px;
+    text-shadow:
+        0 0 7px rgba(0, 170, 255, 0.75),
+        0 0 18px rgba(0, 136, 255, 0.35);
+}
+
+.terminal.terminal-self-destruct {
+    animation:
+        terminalGlitchOut
+        1s
+        steps(5, end)
+        both;
+}
+
+@keyframes terminalGlitchOut {
+
+    0% {
+        opacity: 1;
+        transform: translateX(0);
+        filter: none;
+    }
+
+    25% {
+        transform: translateX(-3px);
+        filter: brightness(1.5);
+    }
+
+    45% {
+        transform: translateX(4px);
+        filter: brightness(0.7);
+    }
+
+    65% {
+        transform: translateX(-2px);
+        filter: brightness(1.8);
+    }
+
+    100% {
+        opacity: 0;
+        transform: scaleY(0.02);
+        filter: brightness(2);
+    }
+}
+
+
+/* =========================================================
+   FINAL BIRTHDAY SCREEN
+   ========================================================= */
+
+.birthday-reveal {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(0, 75, 140, 0.16),
+            rgba(2, 5, 12, 0.98) 62%
+        );
+
+    color: #d9f3ff;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transition:
+        opacity 1.4s ease,
+        visibility 1.4s ease;
+}
+
+.birthday-reveal.birthday-active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.birthday-stars,
+.birthday-stars::before,
+.birthday-stars::after {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.birthday-stars {
+    background:
+        radial-gradient(
+            circle at 12% 18%,
+            rgba(0, 174, 255, 0.75) 0 1px,
+            transparent 2px
+        ),
+        radial-gradient(
+            circle at 76% 22%,
+            rgba(255, 255, 255, 0.55) 0 1px,
+            transparent 2px
+        ),
+        radial-gradient(
+            circle at 28% 72%,
+            rgba(0, 174, 255, 0.55) 0 1px,
+            transparent 2px
+        ),
+        radial-gradient(
+            circle at 86% 78%,
+            rgba(255, 255, 255, 0.45) 0 1px,
+            transparent 2px
+        );
+
+    animation:
+        starDrift
+        10s
+        ease-in-out
+        infinite alternate;
+}
+
+@keyframes starDrift {
+
+    from {
+        transform: scale(1);
+        opacity: 0.45;
+    }
+
+    to {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+.birthday-content {
+    position: relative;
+    z-index: 2;
+
+    width: min(
+        900px,
+        calc(100% - 40px)
+    );
+
+    padding: 30px;
+
+    text-align: center;
+}
+
+.birthday-logo-wrap {
+    width: 92px;
+    height: 92px;
+
+    margin:
+        0 auto 34px;
+
+    opacity: 0;
+
+    transform:
+        scale(0.5);
+
+    transition:
+        opacity 1s ease,
+        transform 1s cubic-bezier(
+            0.2,
+            0.8,
+            0.2,
+            1
+        );
+}
+
+.birthday-logo-wrap.birthday-logo-active {
+    opacity: 1;
+
+    transform:
+        scale(1);
+
+    animation:
+        birthdayLogoGlow
+        2.6s
+        ease-in-out
+        infinite;
+}
+
+.birthday-logo {
+    width: 100%;
+    height: 100%;
+
+    object-fit: contain;
+
+    filter:
+        drop-shadow(
+            0 0 8px
+            rgba(0, 174, 255, 0.75)
+        )
+        drop-shadow(
+            0 0 28px
+            rgba(0, 136, 255, 0.35)
+        );
+}
+
+@keyframes birthdayLogoGlow {
+
+    0%,
+    100% {
+        filter:
+            drop-shadow(
+                0 0 7px
+                rgba(0, 174, 255, 0.6)
+            )
+            drop-shadow(
+                0 0 18px
+                rgba(0, 136, 255, 0.3)
+            );
+    }
+
+    50% {
+        filter:
+            drop-shadow(
+                0 0 14px
+                rgba(0, 174, 255, 1)
+            )
+            drop-shadow(
+                0 0 38px
+                rgba(0, 136, 255, 0.55)
+            );
+    }
+}
+
+.birthday-kicker {
+    min-height: 1.5em;
+
+    color: #19b8ff;
+
+    font-size: clamp(
+        20px,
+        4vw,
+        38px
+    );
+
+    font-weight: 600;
+
+    letter-spacing: 3px;
+
+    text-shadow:
+        0 0 8px
+        rgba(25, 184, 255, 0.9),
+        0 0 24px
+        rgba(0, 136, 255, 0.45);
+}
+
+.birthday-name {
+    min-height: 1.4em;
+
+    margin-top: 20px;
+
+    color: #dff7ff;
+
+    font-size: clamp(
+        34px,
+        8vw,
+        76px
+    );
+
+    font-weight: 700;
+
+    letter-spacing: 7px;
+
+    text-shadow:
+        0 0 8px
+        rgba(0, 174, 255, 0.8),
+        0 0 28px
+        rgba(0, 136, 255, 0.4);
+}
+
+.birthday-real-name {
+    min-height: 1.4em;
+
+    margin-top: 14px;
+
+    color: #9edfff;
+
+    font-size: clamp(
+        18px,
+        3vw,
+        28px
+    );
+
+    letter-spacing: 2px;
+}
+
+.birthday-date {
+    min-height: 1.4em;
+
+    margin-top: 28px;
+
+    color: #19b8ff;
+
+    font-size: clamp(
+        22px,
+        4vw,
+        34px
+    );
+
+    letter-spacing: 4px;
+
+    text-shadow:
+        0 0 8px
+        rgba(25, 184, 255, 0.75);
+}
+
+.birthday-mission {
+    min-height: 1.4em;
+
+    margin-top: 32px;
+
+    color: #6daecc;
+
+    font-size: 12px;
+
+    letter-spacing: 1.5px;
+}
+
+.birthday-from {
+    min-height: 1.4em;
+
+    margin-top: 10px;
+
+    color: #4d829b;
+
+    font-size: 12px;
+
+    letter-spacing: 1px;
+}
+
+
+/* =========================================================
+   BIRTHDAY MEMORY ACTIONS
+   ========================================================= */
+
+.birthday-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 34px;
+}
+
+.memory-button {
+    min-width: 190px;
+    padding: 12px 18px;
+
+    background: rgba(0, 20, 38, 0.55);
+
+    color: #79d7ff;
+
+    border: 1px solid
+        rgba(0, 174, 255, 0.55);
+
+    font-family:
+        "Courier New",
+        Courier,
+        monospace;
+
+    font-size: 11px;
+
+    letter-spacing: 1.4px;
+
+    cursor: pointer;
+
+    opacity: 0;
+
+    transform:
+        translateY(7px);
+
+    transition:
+        opacity 0.8s ease,
+        transform 0.8s ease,
+        color 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+.memory-button.memory-primary {
+    color: #dff7ff;
+
+    border-color:
+        rgba(0, 174, 255, 0.85);
+
+    box-shadow:
+        0 0 14px
+        rgba(0, 136, 255, 0.13);
+}
+
+.memory-button.memory-visible {
+    opacity: 1;
+
+    transform:
+        translateY(0);
+}
+
+.memory-button:hover {
+    color: #ffffff;
+
+    border-color:
+        rgba(0, 200, 255, 1);
+
+    background:
+        rgba(0, 50, 90, 0.45);
+
+    box-shadow:
+        0 0 18px
+        rgba(0, 136, 255, 0.25);
+}
+
+.memory-button:disabled {
+    opacity: 0.55;
+
+    cursor: wait;
+}
+
+.memory-status {
+    min-height: 1.5em;
+
+    margin-top: 14px;
+
+    color: #5aa7c7;
+
+    font-size: 11px;
+
+    letter-spacing: 0.8px;
+
+    opacity: 0;
+
+    transition:
+        opacity 0.4s ease;
+}
+
+.memory-status.visible {
+    opacity: 1;
+}
+
+@media (max-width: 600px) {
+
+    .birthday-content {
+        width: calc(100% - 20px);
+        padding: 20px;
+    }
+
+    .birthday-logo-wrap {
+        width: 68px;
+        height: 68px;
+        margin-bottom: 26px;
+    }
+
+    .birthday-name {
+        letter-spacing: 3px;
+    }
+
+    .birthday-kicker {
+        letter-spacing: 1.8px;
+    }
+
+    .birthday-date {
+        letter-spacing: 2px;
+    }
+}
+
+
+/* =========================================================
+   VISUAL POLISH v8 — CINEMATIC SECURE TERMINAL
+   CSS ONLY: no functional behavior changed
+   ========================================================= */
+
+/* Subtle terminal atmosphere */
+.terminal {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+}
+
+.terminal::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.24;
+    background:
+        linear-gradient(
+            180deg,
+            transparent 0%,
+            rgba(0, 155, 255, 0.035) 49%,
+            rgba(0, 155, 255, 0.075) 50%,
+            transparent 51%
+        );
+    background-size: 100% 7px;
+}
+
+/* Slow blue security sweep across the terminal */
+.terminal::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -12%;
+    height: 2px;
+    z-index: 9998;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 174, 255, 0.0) 15%,
+        rgba(0, 174, 255, 0.75) 50%,
+        rgba(0, 174, 255, 0.0) 85%,
+        transparent
+    );
+    box-shadow:
+        0 0 12px rgba(0, 174, 255, 0.55),
+        0 0 28px rgba(0, 125, 255, 0.24);
+    animation: terminalSecuritySweep 8s linear infinite;
+}
+
+@keyframes terminalSecuritySweep {
+    0% {
+        transform: translateY(-5vh);
+        opacity: 0;
+    }
+    8% {
+        opacity: 0.8;
+    }
+    45% {
+        opacity: 0.55;
+    }
+    52% {
+        opacity: 0;
+    }
+    100% {
+        transform: translateY(110vh);
+        opacity: 0;
+    }
+}
+
+/* Stronger header hierarchy */
+.terminal-header {
+    box-shadow:
+        0 1px 0 rgba(0, 174, 255, 0.22),
+        0 5px 22px rgba(0, 115, 255, 0.10),
+        inset 0 -1px 0 rgba(0, 174, 255, 0.10);
+}
+
+.header-left {
+    position: relative;
+}
+
+.header-left::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -8px;
+    height: 1px;
+    opacity: 0.55;
+    background: linear-gradient(
+        90deg,
+        rgba(0, 174, 255, 0.0),
+        rgba(0, 174, 255, 0.65),
+        rgba(0, 174, 255, 0.0)
+    );
+}
+
+/* Make the status indicator feel like a real connection beacon */
+.status-square {
+    position: relative;
+}
+
+.status-square::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border: 1px solid rgba(0, 174, 255, 0.18);
+    border-radius: 50%;
+    animation: statusRing 1.8s ease-out infinite;
+}
+
+@keyframes statusRing {
+    0% {
+        transform: scale(0.65);
+        opacity: 0.9;
+    }
+    100% {
+        transform: scale(1.8);
+        opacity: 0;
+    }
+}
+
+/* Give terminal sections a slightly more intentional rhythm */
+.terminal-content {
+    position: relative;
+}
+
+.line {
+    transition:
+        text-shadow 0.25s ease,
+        color 0.25s ease;
+}
+
+.line:hover {
+    text-shadow:
+        0 0 5px rgba(0, 160, 255, 0.28);
+}
+
+/* Question panels: subtle HUD corner treatment */
+.question {
+    position: relative;
+    box-shadow:
+        0 0 0 1px rgba(0, 174, 255, 0.025),
+        0 0 20px rgba(0, 120, 255, 0.045);
+}
+
+.question::before,
+.question::after {
+    content: "";
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    pointer-events: none;
+}
+
+.question::before {
+    left: -1px;
+    top: -1px;
+    border-left: 2px solid rgba(0, 174, 255, 0.75);
+    border-top: 2px solid rgba(0, 174, 255, 0.75);
+}
+
+.question::after {
+    right: -1px;
+    bottom: -1px;
+    border-right: 2px solid rgba(0, 174, 255, 0.75);
+    border-bottom: 2px solid rgba(0, 174, 255, 0.75);
+}
+
+/* Answer field feels more like a secure terminal input */
+.answer-input:focus {
+    box-shadow:
+        0 5px 18px rgba(0, 120, 255, 0.10),
+        0 1px 0 rgba(0, 174, 255, 0.35);
+}
+
+/* Passcode: make the decrypted state feel like a successful unlock */
+.passcode-box.decrypted {
+    position: relative;
+    overflow: hidden;
+}
+
+.passcode-box.decrypted::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -35%;
+    width: 22%;
+    pointer-events: none;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 205, 255, 0.32),
+        transparent
+    );
+    animation: passcodeSweep 2.6s ease-in-out infinite;
+}
+
+@keyframes passcodeSweep {
+    0% {
+        transform: translateX(0);
+        opacity: 0;
+    }
+    18% {
+        opacity: 1;
+    }
+    58% {
+        opacity: 0.65;
+    }
+    100% {
+        transform: translateX(650%);
+        opacity: 0;
+    }
+}
+
+/* Final intel divider gets a quiet energy pulse */
+.final-ending {
+    position: relative;
+}
+
+.final-ending::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -1px;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 174, 255, 0.65),
+        transparent
+    );
+    animation: dividerPulse 3.2s ease-in-out infinite;
+}
+
+@keyframes dividerPulse {
+    0%, 100% {
+        opacity: 0.35;
+    }
+    50% {
+        opacity: 1;
+        box-shadow: 0 0 10px rgba(0, 174, 255, 0.28);
+    }
+}
+
+/* Birthday reveal: slightly deeper cinematic depth */
+.birthday-reveal {
+    background:
+        radial-gradient(
+            circle at 50% 44%,
+            rgba(0, 105, 190, 0.18),
+            rgba(2, 5, 12, 0.97) 58%,
+            rgba(0, 0, 0, 1) 100%
+        );
+}
+
+.birthday-content {
+    text-shadow:
+        0 0 1px rgba(0, 174, 255, 0.12);
+}
+
+.birthday-name {
+    text-rendering: geometricPrecision;
+}
+
+.birthday-date {
+    animation:
+        birthdayDatePulse
+        2.8s
+        ease-in-out
+        infinite;
+}
+
+@keyframes birthdayDatePulse {
+    0%, 100% {
+        text-shadow:
+            0 0 8px rgba(25, 184, 255, 0.65),
+            0 0 18px rgba(0, 136, 255, 0.12);
+    }
+    50% {
+        text-shadow:
+            0 0 10px rgba(25, 184, 255, 0.95),
+            0 0 26px rgba(0, 136, 255, 0.30);
+    }
+}
+
+/* Make the final memory action feel like a secure export control */
+.memory-button.memory-primary {
+    position: relative;
+    overflow: hidden;
+}
+
+.memory-button.memory-primary::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0%,
+            rgba(0, 174, 255, 0.08) 45%,
+            rgba(0, 220, 255, 0.16) 50%,
+            rgba(0, 174, 255, 0.08) 55%,
+            transparent 100%
+        );
+    transform: translateX(-120%);
+    transition: transform 0.65s ease;
+}
+
+.memory-button.memory-primary:hover::before {
+    transform: translateX(120%);
+}
+
+.memory-button.memory-primary:active {
+    transform: translateY(1px) scale(0.985);
+    box-shadow:
+        0 0 24px rgba(0, 174, 255, 0.32);
+}
+
+/* Respect reduced-motion accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .terminal::after,
+    .status-square::after,
+    .passcode-box.decrypted::before,
+    .final-ending::before,
+    .birthday-date {
+        animation: none !important;
+    }
+}
+
+/* Mobile polish */
+@media (max-width: 700px) {
+    .terminal::after {
+        animation-duration: 10s;
+    }
+
+    .question {
+        box-shadow:
+            0 0 14px rgba(0, 120, 255, 0.04);
+    }
+
+    .birthday-content {
+        width: min(94%, 900px);
+        padding: 22px 16px;
+    }
+}
+
+
+/* Passcode authorization window */
+.passcode-expiry-notice {
+    margin: 10px 0 14px;
+    padding: 8px 10px;
+    border-left: 2px solid rgba(0, 174, 255, 0.70);
+    color: rgba(105, 202, 255, 0.90);
+    font-family: inherit;
+    font-size: 0.82rem;
+    line-height: 1.65;
+    letter-spacing: 0.035em;
+    text-shadow: 0 0 7px rgba(0, 150, 255, 0.18);
+    background: rgba(0, 100, 180, 0.035);
+}

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RESISTANCE INTELLIGENCE NETWORK</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="terminal">
+
+        <!-- =====================================
+             TERMINAL HEADER
+             ===================================== -->
+
+        <header class="terminal-header">
+
+            <div class="header-left">
+
+                <div class="resistance-logo-wrap" aria-hidden="true">
+                    <img
+                        id="resistance-logo"
+                        class="resistance-logo"
+                        src="assets/resistance-logo.png"
+                        alt=""
+                    >
+                </div>
+
+                <span
+                    class="header-title typing-cursor"
+                    id="header-title"
+                    aria-label="Resistance Intelligence Network"
+                ></span>
+
+            </div>
+
+            <div class="header-status" aria-label="Terminal status">
+                <div class="terminal-version">SECURE TERMINAL v2.4.1</div>
+                <div class="terminal-link">LINK: ESTABLISHED <span class="status-square" aria-hidden="true"></span></div>
+            </div>
+
+        </header>
+
+        <!-- =====================================
+             TERMINAL CONTENT
+             ===================================== -->
+
+        <div class="terminal-content">
+
+            <div id="terminal-output"></div>
+
+            <div id="verification-container"></div>
+
+        </div>
+
+        <footer class="terminal-footer">
+            <div><span class="footer-square" aria-hidden="true"></span> TERMINAL READY</div>
+            <div>CLASSIFICATION: TOP SECRET</div>
+        </footer>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="audio.js"></script>
+    <script src="script.js"></script>
+
+
+    <!-- =========================================
+         FINAL BIRTHDAY REVEAL
+         ========================================= -->
+
+    <section
+        id="birthday-reveal"
+        class="birthday-reveal"
+        aria-hidden="true"
+    >
+
+        <div class="birthday-stars"></div>
+
+        <div class="birthday-content">
+
+            <div class="birthday-logo-wrap">
+                <img
+                    class="birthday-logo"
+                    src="assets/resistance-logo.png"
+                    alt="Resistance emblem"
+                >
+            </div>
+
+            <div
+                id="birthday-kicker"
+                class="birthday-kicker"
+            ></div>
+
+            <div
+                id="birthday-name"
+                class="birthday-name"
+            ></div>
+
+            <div
+                id="birthday-real-name"
+                class="birthday-real-name"
+            ></div>
+
+            <div
+                id="birthday-date"
+                class="birthday-date"
+            ></div>
+
+            <div
+                id="birthday-mission"
+                class="birthday-mission"
+            ></div>
+
+            <div
+                id="birthday-from"
+                class="birthday-from"
+            ></div>
+
+            <div class="birthday-actions">
+
+                <button
+                    id="share-memory"
+                    class="memory-button memory-primary"
+                    type="button"
+                >
+                    SHARE / SAVE MEMORY
+                </button>
+
+                <button
+                    id="download-memory"
+                    class="memory-button memory-secondary"
+                    type="button"
+                >
+                    DOWNLOAD IMAGE
+                </button>
+
+            </div>
+
+            <div
+                id="memory-status"
+                class="memory-status"
+                aria-live="polite"
+            ></div>
+
+        </div>
+
+    </section>
+
+</body>
+</html>
