@@ -2271,7 +2271,7 @@ function waitForImageLoaded(
                     '',
                     '',
                     '',
-                    '> MAY YOUR NEXT OPERATION BE LEGENDARY.'
+                    '> CLICK/TAP ON PASSCODE TO COPY AND CONTINUE FOR ANOTHER SURPRISE.'
                 ];
                 function next(i){if(i>=data.length){autoScroll();return;} typeElementText(ending.querySelector('.ending-line-'+(i+1)),data[i],26,function(){setTimeout(function(){next(i+1);},280);});}
                 next(0);
